@@ -30,14 +30,40 @@ Aplicativo de bandeja do sistema (system tray) para receber notificações em te
 
 ---
 
-## Pré-requisitos
+## Instalação completa (recomendado)
+
+Use os scripts de instalação da [Retaguarda](https://github.com/josivantarcio/GestaoFrotaEntrega-Retaguarda) — eles instalam Docker, Node.js, sobem a Retaguarda **e** configuram o Tray com auto-start nativo do SO, tudo de uma vez.
+
+> Os scripts ficam na pasta `logistica-retaguarda/` e precisam que `logistica-retaguarda` e `logistica-tray` estejam lado a lado no mesmo diretório.
+
+**Linux** (Ubuntu, Debian, Fedora, Arch):
+```bash
+chmod +x install.sh && ./install.sh
+```
+Auto-start via `.desktop` em `~/.config/autostart`.
+
+**macOS** (Monterey 12+):
+```bash
+chmod +x install-mac.sh && ./install-mac.sh
+```
+Auto-start via **LaunchAgent** em `~/Library/LaunchAgents`.
+
+**Windows** (10/11):
+```
+# Double-click em install.bat  (solicita Admin automaticamente)
+```
+Auto-start via **Task Scheduler** no logon do usuário.
+
+---
+
+## Pré-requisitos (instalação manual)
 
 - Node.js 18+
 - Retaguarda RouteLog rodando e acessível
 
 ---
 
-## Instalação
+## Instalação manual
 
 ```bash
 npm install
@@ -46,18 +72,25 @@ npm run build
 
 ---
 
-## Executar
+## Executar manualmente
 
-### Linux (desenvolvimento)
+### Linux
 ```bash
-ROUTELOG_DASHBOARD_URL="http://localhost:3000" \
+ROUTELOG_DASHBOARD_URL="http://localhost:3000/dashboard" \
 ROUTELOG_SSE_URL="http://localhost:3000/api/events" \
 npm start
 ```
 
-### Windows (desenvolvimento)
+### macOS
+```bash
+ROUTELOG_DASHBOARD_URL="http://localhost:3000/dashboard" \
+ROUTELOG_SSE_URL="http://localhost:3000/api/events" \
+npm start
+```
+
+### Windows
 ```cmd
-set ROUTELOG_DASHBOARD_URL=http://192.168.1.100:3000
+set ROUTELOG_DASHBOARD_URL=http://192.168.1.100:3000/dashboard
 set ROUTELOG_SSE_URL=http://192.168.1.100:3000/api/events
 npm start
 ```
