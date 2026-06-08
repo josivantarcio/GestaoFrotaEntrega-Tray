@@ -3,6 +3,7 @@ import * as http from "http";
 import * as https from "https";
 import * as path from "path";
 import AutoLaunch from "auto-launch";
+import { parsearEvento, gerarMensagem, extrairEventosDoBuffer } from "./lib/eventos";
 
 // ── Configuração ─────────────────────────────────────────────────
 const DASHBOARD_URL =
@@ -54,32 +55,10 @@ function notificar(titulo: string, corpo: string) {
 
 // ── Processar evento SSE ─────────────────────────────────────────
 function processarEvento(raw: string) {
-  try {
-    const evento = JSON.parse(raw) as { tipo: string; tabela: string; payload: Record<string, unknown> };
-    const p = evento.payload ?? {};
-
-    switch (evento.tipo) {
-      case "rota_upserted": {
-        const status = p.status as string;
-        const motorista = (p.motorista as string) ?? "Motorista";
-        const placa = (p.veiculo_placa as string) ?? "";
-        const hora_saida = (p.hora_saida as string) ?? "";
-        const hora_chegada = (p.hora_chegada as string) ?? "--";
-
-        if (status === "em_andamento") {
-          notificar("Rota Iniciada", `${motorista} saiu com ${placa} às ${hora_saida}`);
-        } else if (status === "concluida") {
-          const km_saida = (p.km_saida as number) ?? 0;
-          const km_chegada = (p.km_chegada as number) ?? 0;
-          const km = km_chegada > 0 ? ` · ${(km_chegada - km_saida).toFixed(0)} km` : "";
-          notificar("Rota Encerrada", `${motorista} chegou às ${hora_chegada}${km}`);
-        }
-        break;
-      }
-    }
-  } catch {
-    // JSON inválido — ignora
-  }
+  const evento = parsearEvento(raw);
+  if (!evento) return;
+  const msg = gerarMensagem(evento);
+  if (msg) notificar(msg.titulo, msg.corpo);
 }
 
 // ── SSE: conectar ao servidor ────────────────────────────────────
@@ -116,11 +95,7 @@ function conectarSSE() {
       const linhas = buffer.split("\n");
       buffer = linhas.pop() ?? "";
 
-      linhas.forEach((linha) => {
-        if (linha.startsWith("data: ")) {
-          processarEvento(linha.slice(6).trim());
-        }
-      });
+      extrairEventosDoBuffer(linhas.join("\n")).forEach(processarEvento);
     });
 
     res.on("end", agendarReconexao);

@@ -9,7 +9,9 @@
     "build": "tsc",
     "start": "electron . --no-sandbox",
     "dist:linux": "npm run build && electron-builder --linux AppImage",
-    "dist:win": "npm run build && electron-builder --win nsis"
+    "dist:win": "npm run build && electron-builder --win nsis",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "auto-launch": "^5.0.6"
@@ -19,12 +21,16 @@
     "@types/node": "^20",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   },
   "build": {
     "appId": "com.routelog.tray",
     "productName": "RouteLog",
-    "files": ["dist/**/*", "assets/**/*"],
+    "files": [
+      "dist/**/*",
+      "assets/**/*"
+    ],
     "linux": {
       "target": "AppImage",
       "icon": "assets/icon.png"
