@@ -27,6 +27,16 @@ describe("parsearEvento", () => {
   });
 });
 
+// ── gerarMensagem — payload ausente ──────────────────────────────
+
+describe("gerarMensagem — payload ausente", () => {
+  it("trata payload undefined como {} (retorna null para tipo desconhecido)", () => {
+    // Cobre o branch evento.payload ?? {} quando payload é undefined
+    const msg = gerarMensagem({ tipo: "tipo_desconhecido" as never, tabela: "t" });
+    expect(msg).toBeNull();
+  });
+});
+
 // ── gerarMensagem — rota_upserted ─────────────────────────────────
 
 describe("gerarMensagem — rota_upserted", () => {
